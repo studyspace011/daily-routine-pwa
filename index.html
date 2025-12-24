@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Winter Routine</title>
+    <meta name="theme-color" content="#121212">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --bg: #121212;
+            --card: #1E1E1E;
+            --text: #E0E0E0;
+            --accent: #4CAF50; /* Green for consistency */
+            --danger: #FF5252;
+            --dim: #888;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 { font-size: 1.5rem; margin: 0; }
+        .quote { 
+            color: var(--dim); 
+            font-size: 0.9rem; 
+            font-style: italic; 
+            margin-top: 5px; 
+            border-left: 3px solid var(--accent);
+            padding-left: 10px;
+            display: inline-block;
+        }
+
+        /* Sections */
+        .section-title {
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        /* Routine Cards */
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: 0.2s;
+            border: 1px solid #333;
+        }
+
+        .card.active { border-color: var(--accent); box-shadow: 0 0 10px rgba(76, 175, 80, 0.2); }
+        .card.done { opacity: 0.5; text-decoration: line-through; }
+
+        .time { font-size: 0.85rem; color: var(--accent); font-weight: bold; display: block; }
+        .task { font-size: 1rem; margin-top: 2px; display: block; }
+        .note { font-size: 0.75rem; color: var(--dim); display: block; margin-top: 4px;}
+
+        /* Checkbox */
+        .check-container {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--dim);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-left: 15px;
+        }
+        .check-container.checked {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+        .check-container i { color: #fff; font-size: 14px; display: none; }
+        .check-container.checked i { display: block; }
+
+        /* Planning Section */
+        textarea {
+            width: 100%;
+            background: var(--card);
+            border: 1px solid #333;
+            color: var(--text);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            box-sizing: border-box;
+        }
+
+        /* Rules Box */
+        .rules-box {
+            background: #2a1a1a;
+            border: 1px solid var(--danger);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .rules-title { color: var(--danger); font-weight: bold; margin-bottom: 5px; }
+        .rules-list { font-size: 0.85rem; margin: 0; padding-left: 20px; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>❄️ Winter Protocol</h1>
+        <div class="quote">"Main routine ka aadmi hoon,<br>attention ka nahi."</div>
+    </header>
+
+    <div class="section-title">🌅 Morning (Output First)</div>
+    <div id="morning-list"></div>
+
+    <div class="section-title">🏢 Office (9:00 - 7:30)</div>
+    <div class="card">
+        <div>
+            <span class="time">WHATSAPP RULE</span>
+            <span class="task">Muted. Check: Lunch & Leave.</span>
+        </div>
+    </div>
+    <div class="card">
+        <div>
+            <span class="time">LUNCH</span>
+            <span class="task">Optional: 20m Revise or Rest.</span>
+        </div>
+    </div>
+
+    <div class="section-title">🌙 Evening (Focus & Plan)</div>
+    <div id="evening-list"></div>
+
+    <div class="section-title">🧠 Next Day Plan (9:45 PM)</div>
+    <textarea id="tomorrowPlan" placeholder="Subject & One Line Task..."></textarea>
+
+    <div class="rules-box">
+        <div class="rules-title">⚠️ Emotional Firewall</div>
+        <ul class="rules-list">
+            <li>Routine ≠ Negotiable</li>
+            <li>Messages ≠ Priority</li>
+            <li>No new chapters in AM block</li>
+            <li>Skip meals = Mind unstable</li>
+        </ul>
+    </div>
+
+    <script>
+        // Data Structure
+        const tasks = [
+            { id: 't1', time: '05:30', title: 'Wake Up + Face Wash', note: 'Lukewarm water', section: 'morning-list' },
+            { id: 't2', time: '05:40', title: 'Body Activation', note: 'Stretching/Walk (No heavy exercise)', section: 'morning-list' },
+            { id: 't3', time: '06:00', title: 'DEEP STUDY BLOCK 1', note: 'One Subject. MCQ/PYQ/Notes only.', section: 'morning-list' },
+            { id: 't4', time: '07:20', title: 'Get Ready + Breakfast', note: 'Leave at 8:45 AM', section: 'morning-list' },
+            { id: 't5', time: '20:30', title: 'DEEP STUDY BLOCK 2', note: 'Same subject. Finish pending tasks.', section: 'evening-list' },
+            { id: 't6', time: '21:45', title: 'Planning + Wind Down', note: 'Decide tomorrow\'s subject.', section: 'evening-list' },
+            { id: 't7', time: '22:30', title: 'Sleep', note: 'No emotional chats.', section: 'evening-list' }
+        ];
+
+        // Render Tasks
+        function renderTasks() {
+            tasks.forEach(task => {
+                const isChecked = localStorage.getItem(task.id) === 'true';
+                const div = document.createElement('div');
+                div.className = `card ${isChecked ? 'done' : ''}`;
+                div.onclick = () => toggleTask(task.id, div, checkDiv);
+
+                const checkDiv = document.createElement('div');
+                checkDiv.className = `check-container ${isChecked ? 'checked' : ''}`;
+                checkDiv.innerHTML = '<i>✓</i>';
+
+                div.innerHTML = `
+                    <div>
+                        <span class="time">${task.time}</span>
+                        <span class="task">${task.title}</span>
+                        <span class="note">${task.note}</span>
+                    </div>
+                `;
+                div.appendChild(checkDiv);
+                document.getElementById(task.section).appendChild(div);
+            });
+        }
+
+        // Toggle Logic
+        function toggleTask(id, card, check) {
+            const currentStatus = localStorage.getItem(id) === 'true';
+            const newStatus = !currentStatus;
+            localStorage.setItem(id, newStatus);
+            
+            if(newStatus) {
+                card.classList.add('done');
+                check.classList.add('checked');
+            } else {
+                card.classList.remove('done');
+                check.classList.remove('checked');
+            }
+        }
+
+        // Planner Logic
+        const planner = document.getElementById('tomorrowPlan');
+        planner.value = localStorage.getItem('winterPlan') || '';
+        planner.addEventListener('input', (e) => {
+            localStorage.setItem('winterPlan', e.target.value);
+        });
+
+        // Daily Reset (Midnight)
+        const lastRun = localStorage.getItem('lastRunDate');
+        const today = new Date().toDateString();
+        if(lastRun !== today) {
+            tasks.forEach(t => localStorage.removeItem(t.id)); // Uncheck boxes
+            // Keep the plan, don't delete plan yet
+            localStorage.setItem('lastRunDate', today);
+            location.reload();
+        }
+
+        // Init
+        renderTasks();
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
